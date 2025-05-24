@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "../components/Header";
 import ServiceCard from "../components/ServiceCard";
 import BookingForm from "../components/BookingForm";
 import { FaPaintBrush, FaHandSparkles, FaSpa, FaGem, FaRegSmile } from "react-icons/fa";
 
 export default function Home() {
+  const [videoError, setVideoError] = useState(false);
+
   return (
     <div className="bg-noir min-h-screen font-sans">
       <Header />
@@ -12,15 +14,20 @@ export default function Home() {
       {/* HERO VIDEO + OVERLAY */}
       <div className="relative w-full h-[90vh] overflow-hidden flex items-center justify-center">
         {/* Vidéo en arrière-plan */}
-        <video
-          className="absolute inset-0 w-full h-full object-cover opacity-70"
-          src="/videos/hero.mp4"
-          type="video/mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-        />
+        {!videoError ? (
+          <video
+            className="absolute inset-0 w-full h-full object-cover opacity-70"
+            src="/videos/hero.mp4"
+            type="video/mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            onError={() => setVideoError(true)}
+          />
+        ) : (
+          <div className="absolute inset-0 bg-noir opacity-70" />
+        )}
 
         {/* Overlay sombre + contenu centré */}
         <div className="absolute inset-0 bg-noir bg-opacity-60 flex flex-col items-center justify-center text-center px-4">

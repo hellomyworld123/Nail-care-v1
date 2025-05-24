@@ -5,13 +5,26 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+// Ajout d'un gestionnaire d'erreurs
+const renderApp = () => {
+  try {
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  } catch (error) {
+    console.error('Erreur de rendu:', error);
+    root.render(
+      <div style={{ color: 'red', padding: '20px' }}>
+        Une erreur est survenue lors du chargement de l'application.
+        <pre>{error.message}</pre>
+      </div>
+    );
+  }
+};
+
+renderApp();
+
 reportWebVitals();
