@@ -1,6 +1,6 @@
 // src/components/BookingForm.jsx
 import React, { useState, useEffect } from "react";
-import { postReservation, checkApiConnection, checkMongoConnection } from "../lib/api";
+import { postReservation, checkApiConnection, checkDbConnection as checkMongoConnection } from "../lib/api";
 
 const services = [
   "Vernis permanent",
