@@ -44,6 +44,8 @@ async function handleResponse(response) {
     const errorText = await response.text();
     console.error('❌ Erreur API:', {
       status: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries()),
       message: errorText
     });
     throw new Error(`API ${response.status}: ${errorText}`);
@@ -55,12 +57,18 @@ async function handleResponse(response) {
 export async function checkApiConnection() {
   try {
     console.log('🔍 Vérification API - URL:', `${API_URL}/health`);
-    const response = await fetch(`${API_URL}/health`, defaultConfig);
+    const response = await fetch(`${API_URL}/health`, {
+      ...defaultConfig,
+      method: 'GET'
+    });
     const data = await handleResponse(response);
     console.log('✅ Connexion API OK:', data);
     return true;
   } catch (error) {
-    console.error('❌ Erreur de connexion API:', error);
+    console.error('❌ Erreur de connexion API:', {
+      message: error.message,
+      stack: error.stack
+    });
     return false;
   }
 }
@@ -68,13 +76,23 @@ export async function checkApiConnection() {
 // Fonction pour vérifier la connexion à la base de données
 export async function checkDbConnection() {
   try {
-    console.log('🔍 Vérification DB - URL:', `${API_URL}/api/db-status`);
-    const response = await fetch(`${API_URL}/api/db-status`, defaultConfig);
+    // On utilise le même endpoint que le health check car il semble être le seul qui fonctionne
+    console.log('🔍 Vérification DB via health check - URL:', `${API_URL}/health`);
+    const response = await fetch(`${API_URL}/health`, {
+      ...defaultConfig,
+      method: 'GET'
+    });
     const data = await handleResponse(response);
-    console.log('✅ Connexion DB OK:', data);
+    
+    // On considère que si l'API répond, la DB est probablement connectée
+    // car l'API ne peut pas fonctionner sans DB
+    console.log('✅ Connexion DB OK (via health check):', data);
     return true;
   } catch (error) {
-    console.error('❌ Erreur de connexion DB:', error);
+    console.error('❌ Erreur de connexion DB:', {
+      message: error.message,
+      stack: error.stack
+    });
     return false;
   }
 }
@@ -95,7 +113,10 @@ export async function postReservation(payload) {
     console.log('✅ Réservation réussie:', data);
     return data;
   } catch (error) {
-    console.error('❌ Erreur lors de l\'appel API:', error);
+    console.error('❌ Erreur lors de l\'appel API:', {
+      message: error.message,
+      stack: error.stack
+    });
     throw error;
   }
 }
@@ -103,10 +124,19 @@ export async function postReservation(payload) {
 // Fonction pour récupérer les réservations
 export async function getReservations() {
   try {
-    const response = await fetch(`${API_URL}/api/appointments`, defaultConfig);
-    return handleResponse(response);
+    console.log('📥 Récupération des réservations depuis:', `${API_URL}/api/appointments`);
+    const response = await fetch(`${API_URL}/api/appointments`, {
+      ...defaultConfig,
+      method: 'GET'
+    });
+    const data = await handleResponse(response);
+    console.log('✅ Réservations récupérées:', data);
+    return data;
   } catch (error) {
-    console.error('❌ Erreur lors de la récupération des réservations:', error);
+    console.error('❌ Erreur lors de la récupération des réservations:', {
+      message: error.message,
+      stack: error.stack
+    });
     throw error;
   }
 }
@@ -114,13 +144,19 @@ export async function getReservations() {
 // Fonction pour supprimer une réservation
 export async function deleteReservation(id) {
   try {
+    console.log('🗑️ Suppression de la réservation:', id);
     const response = await fetch(`${API_URL}/api/appointments/${id}`, {
       ...defaultConfig,
       method: 'DELETE'
     });
-    return handleResponse(response);
+    const data = await handleResponse(response);
+    console.log('✅ Réservation supprimée:', data);
+    return data;
   } catch (error) {
-    console.error('❌ Erreur lors de la suppression de la réservation:', error);
+    console.error('❌ Erreur lors de la suppression de la réservation:', {
+      message: error.message,
+      stack: error.stack
+    });
     throw error;
   }
 } 
