@@ -1,55 +1,60 @@
-# Sahar Frontend
+# Sahar Nail Care - Frontend
 
-Ce projet est une application web moderne développée avec React et Tailwind CSS.
+Application frontend pour le salon de beauté Sahar Nail Care.
 
-## Technologies utilisées
+## Configuration
 
-- React
-- Tailwind CSS
-- Flowbite
-- React Icons
+### Variables d'environnement
 
-## Installation
+Créez un fichier `.env.local` à la racine du projet avec les variables suivantes :
 
-1. Clonez le repository
-```bash
-git clone [URL_DU_REPO]
+```env
+REACT_APP_API_URL=https://sahar-backend.onrender.com
 ```
 
-2. Installez les dépendances
+### Développement local
+
+1. Installez les dépendances :
 ```bash
 npm install
 ```
 
-3. Lancez le serveur de développement
+2. Démarrez le serveur de développement :
 ```bash
 npm start
 ```
 
-## Scripts disponibles
+L'application sera disponible à l'adresse [http://localhost:3000](http://localhost:3000).
 
-- `npm start` : Lance le serveur de développement
-- `npm run build` : Crée une version de production
-- `npm test` : Lance les tests
-- `npm run eject` : Éjecte la configuration (à utiliser avec précaution)
+### Déploiement sur Vercel
 
-## Déploiement
+1. Connectez votre dépôt GitHub à Vercel
+2. Configurez les variables d'environnement dans les paramètres du projet :
+   - `REACT_APP_API_URL`: https://sahar-backend.onrender.com
 
-Ce projet est configuré pour être déployé sur Vercel. Le déploiement se fait automatiquement à chaque push sur la branche principale.
+### Déploiement sur Render
+
+1. Créez un nouveau service "Static Site"
+2. Configurez les commandes :
+   - Build Command: `npm install && npm run build`
+   - Start Command: `serve -s build`
+3. Ajoutez les variables d'environnement :
+   - `REACT_APP_API_URL`: https://sahar-backend.onrender.com
 
 ## Structure du projet
 
-- `/src` : Contient le code source de l'application
-- `/public` : Contient les fichiers statiques
-- `/build` : Contient la version de production (générée après build)
+- `src/lib/api.js` : Service API centralisé
+- `src/components/` : Composants React
+- `src/pages/` : Pages de l'application
+- `public/` : Fichiers statiques
 
-## Contribution
+## Fonctionnalités
 
-1. Fork le projet
-2. Créez votre branche de fonctionnalité (`git checkout -b feature/AmazingFeature`)
-3. Committez vos changements (`git commit -m 'Add some AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrez une Pull Request
+- Vérification de la connexion API
+- Vérification de la connexion à la base de données
+- Gestion des réservations
+- Interface responsive
+- Optimisation des performances
 
 # Getting Started with Create React App
 
