@@ -1,8 +1,8 @@
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL || 'https://sahar-backend.onrender.com';
 const MONGODB_URI = process.env.MONGODB_URI;
 
 // Fonction pour vérifier la connexion à l'API
-async function checkApiConnection() {
+export async function checkApiConnection() {
   try {
     const response = await fetch(`${API_URL}/health`);
     const data = await response.json();
@@ -15,14 +15,35 @@ async function checkApiConnection() {
 }
 
 // Fonction pour vérifier la connexion MongoDB
-async function checkMongoConnection() {
+export async function checkMongoConnection() {
   try {
-    const response = await fetch(`${API_URL}/mongo-status`);
+    console.log('🔍 Vérification MongoDB - URL:', `${API_URL}/api/mongo-status`);
+    const response = await fetch(`${API_URL}/api/mongo-status`, {
+      headers: {
+        "X-Mongo-URI": MONGODB_URI
+      }
+    });
+    
+    console.log('📥 Réponse MongoDB:', {
+      status: response.status,
+      statusText: response.statusText
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Erreur MongoDB - Status:', response.status, 'Message:', errorText);
+      return false;
+    }
+
     const data = await response.json();
     console.log('✅ Connexion MongoDB OK:', data);
     return true;
   } catch (error) {
-    console.error('❌ Erreur de connexion MongoDB:', error);
+    console.error('❌ Erreur de connexion MongoDB:', {
+      message: error.message,
+      stack: error.stack,
+      url: `${API_URL}/api/mongo-status`
+    });
     return false;
   }
 }
@@ -40,7 +61,6 @@ export async function postReservation(payload) {
 
   if (!API_URL) {
     console.warn("⚠️ REACT_APP_API_URL n'est pas défini. Le formulaire fonctionnera en mode démo.");
-    // Simuler une réponse réussie en mode démo
     return new Promise(resolve => {
       setTimeout(() => {
         resolve({ success: true, message: "Mode démo : réservation simulée" });
@@ -48,15 +68,20 @@ export async function postReservation(payload) {
     });
   }
 
-  console.log('📤 Envoi de la réservation à:', `${API_URL}/api/reservations`); // Log de l'URL complète
-  console.log('📦 Données envoyées:', payload); // Log des données envoyées
+  if (!MONGODB_URI) {
+    console.error("❌ MONGODB_URI n'est pas défini");
+    throw new Error("Configuration MongoDB manquante");
+  }
+
+  console.log('📤 Envoi de la réservation à:', `${API_URL}/api/reservations`);
+  console.log('📦 Données envoyées:', payload);
 
   try {
     const res = await fetch(`${API_URL}/api/reservations`, {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",
-        "X-Mongo-URI": MONGODB_URI // Ajout de l'URI MongoDB dans les headers
+        "X-Mongo-URI": MONGODB_URI
       },
       body: JSON.stringify(payload),
     });
@@ -77,7 +102,7 @@ export async function postReservation(payload) {
     }
     
     const data = await res.json();
-    console.log('✅ Réservation réussie:', data); // Log de la réponse réussie
+    console.log('✅ Réservation réussie:', data);
     return data;
   } catch (error) {
     console.error('❌ Erreur lors de l\'appel API:', {

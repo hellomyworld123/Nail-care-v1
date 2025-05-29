@@ -1,6 +1,6 @@
 // src/components/BookingForm.jsx
-import React, { useState } from "react";
-import { postReservation } from "../lib/api";
+import React, { useState, useEffect } from "react";
+import { postReservation, checkApiConnection, checkMongoConnection } from "../lib/api";
 
 const services = [
   "Vernis permanent",
@@ -22,6 +22,16 @@ export default function BookingForm() {
   });
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState({ api: false, mongo: false });
+
+  useEffect(() => {
+    const checkConnections = async () => {
+      const apiStatus = await checkApiConnection();
+      const mongoStatus = await checkMongoConnection();
+      setConnectionStatus({ api: apiStatus, mongo: mongoStatus });
+    };
+    checkConnections();
+  }, []);
 
   const handleChange = e => {
     setData({ ...data, [e.target.name]: e.target.value });
@@ -59,6 +69,18 @@ export default function BookingForm() {
       onSubmit={handleSubmit}
     >
       <h3 className="text-lg sm:text-xl font-bold text-gold mb-4 sm:mb-6">Réservez votre rendez-vous</h3>
+      
+      {/* Indicateur de statut de connexion */}
+      <div className="mb-4 text-sm">
+        <div className="flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full ${connectionStatus.api ? 'bg-green-500' : 'bg-red-500'}`}></span>
+          <span className="text-rose">API: {connectionStatus.api ? 'Connecté' : 'Déconnecté'}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full ${connectionStatus.mongo ? 'bg-green-500' : 'bg-red-500'}`}></span>
+          <span className="text-rose">Base de données: {connectionStatus.mongo ? 'Connecté' : 'Déconnecté'}</span>
+        </div>
+      </div>
 
       {step === 1 && (
         <div>

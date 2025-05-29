@@ -15,16 +15,16 @@ export default function Home() {
       <div className="relative w-full h-[90vh] overflow-hidden flex items-center justify-center">
         {/* Vidéo en arrière-plan */}
         {!videoError ? (
-          <video
-            className="absolute inset-0 w-full h-full object-cover opacity-70"
-            src="/videos/hero.mp4"
-            type="video/mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
+        <video
+          className="absolute inset-0 w-full h-full object-cover opacity-70"
+          src="/videos/hero.mp4"
+          type="video/mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
             onError={() => setVideoError(true)}
-          />
+        />
         ) : (
           <div className="absolute inset-0 bg-noir opacity-70" />
         )}
